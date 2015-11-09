@@ -11,7 +11,7 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 
-public class Crawler {
+public class Crawler implements Runnable {
 
 	public ArrayList<String> urls = new ArrayList<String>();
 	String BaseURL;
@@ -30,15 +30,23 @@ public class Crawler {
 		container.put(BaseURL, getUrlSource(BaseURL));
 
 	}
+	
+	@Override
+	public void run() {
+		asyncronous A1 = new asyncronous(BaseURL, base, urls, depth, 0, container);
+		A1.run();
+		
+	}
 
 	public void runCrawler() {
+		//starts the building
 		asyncronous A1 = new asyncronous(BaseURL, base, urls, depth, 0, container);
 		A1.run();
 	}
 
 	public void runListURL() {
 		for(int i=0;i< urls.size();i++){
-			System.out.println(container.get(urls.get(i)));
+			//System.out.println(container.get(urls.get(i)));
 		}
 	}
 	
@@ -121,5 +129,7 @@ public class Crawler {
 		public String flag() {
 			return flag;
 		}
+
+
 
 }

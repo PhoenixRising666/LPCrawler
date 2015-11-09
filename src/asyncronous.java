@@ -21,6 +21,8 @@ public class asyncronous implements Runnable {
 	public static ArrayList<String> urls;
 	private Map<String, String> container;
 	
+	//constructor
+	
 	asyncronous(String BaseURL, String baseIn, ArrayList<String> urlsIn, int Depth, int Current, Map<String, String> in){
 	       url=BaseURL;
 	       base=baseIn;
@@ -32,9 +34,12 @@ public class asyncronous implements Runnable {
 	
 	public void run() {
 		try{
+			int i=0;
 			Document doc = Jsoup.connect(url).get();
 			org.jsoup.select.Elements links = doc.select("a");
 			for(Element e: links){
+				System.out.println(i);
+				i++;
 				//only if this website has no longer been visited
 				if(!urls.contains(e.attr("abs:href"))){
 					//eliminates pictures and pdfs, and common website links
@@ -50,22 +55,25 @@ public class asyncronous implements Runnable {
 													if(e.attr("abs:href").contains(base)){
 														urls.add(e.attr("abs:href"));
 														
-														System.out.println(e.attr("abs:href"));
-														
-														new Thread(new Runnable() {
-															public void run() {
-																container.put(e.attr("abs:href"), getUrlSource(e.attr("abs:href")));
-															}
-														}).start();
+														//System.out.println(e.attr("abs:href"));
 														
 														
 														//limits depth search
 														if(CurrentDepth<=MaxDepth){
 															//recursive call
-															//buildList(e.attr("abs:href"),base);
-															asyncronous A1 = new asyncronous(e.attr("abs:href"),base, urls, MaxDepth, CurrentDepth++,container);
+															asyncronous A1 = new asyncronous(e.attr("abs:href"),base, urls, MaxDepth, CurrentDepth+1,container);
+															System.out.println("Thread Open");
 															A1.run();
+															container.put(e.attr("abs:href"), getUrlSource(e.attr("abs:href")));		
+															urls.add(e.attr("abs:href"));
+															this.wait();
+															System.out.println("Thread Wait Over");
 														}
+														else{
+															container.put(e.attr("abs:href"), getUrlSource(e.attr("abs:href")));		
+															urls.add(e.attr("abs:href"));
+														}
+														
 													}
 												}
 											}
@@ -77,13 +85,18 @@ public class asyncronous implements Runnable {
 					}
 				}
 			}
-		} catch(IOException ex) {
-			
+		} catch(IOException ex) {		
+		} catch (InterruptedException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
 		}
+		System.out.println("Thread Close");
+		this.notifyAll();
 	}
 	
 	// pulls source from url
 	public String getUrlSource(String url) {
+		//System.out.println("Pull Source");
 		try {
 			URL yahoo = new URL(url);
 			URLConnection yc = yahoo.openConnection();
@@ -95,6 +108,8 @@ public class asyncronous implements Runnable {
 				a.append(inputLine);
 			in.close();
 
+			//test
+			//System.out.println(a.toString());
 			return a.toString();
 		} catch (IOException e) {
 			return "";

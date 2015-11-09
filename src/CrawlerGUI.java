@@ -1,5 +1,6 @@
 import java.awt.BorderLayout;
 import java.awt.EventQueue;
+import java.util.concurrent.ExecutionException;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -232,103 +233,68 @@ public class CrawlerGUI extends javax.swing.JFrame {
 				.append("Building Site Map (this can take a while depending on depth) \n");
 
 		// sends the base urls and requested depth
-		// crawl.CrawlerInit(URLin.getText(),
-		// BaseIn.getText(),Integer.parseInt(depthIn.getText()), maxReached);
+		// crawl.CrawlerInit(URLin.getText(),BaseIn.getText(),Integer.parseInt(depthIn.getText()),
+		// maxReached);
 
 		// this is test crawl launcher
-		crawl.CrawlerInit("http://pioneerdoctor.com/", "pioneerdoctor.com", 0);
+		crawl.CrawlerInit("http://pioneerdoctor.com/", "pioneerdoctor.com", 6);
 
 		// launches crawler as a thread searches results upon completion
 		SwingWorker<Void, Void> worker = new SwingWorker<Void, Void>() {
 			@Override
 			protected Void doInBackground() throws Exception {
 				crawl.runCrawler();
-				/*
-				 * new Thread(new Runnable() { public void run() { int
-				 * current=0;
-				 * while(maxReached.getDepth()<Integer.parseInt(depthIn
-				 * .getText())){ if(current<maxReached.getDepth()){ current++;
-				 * System.out.println("At depth of "+current);
-				 * staticLinkTextArea.append("At depth of "+current); } } }
-				 * }).start();
-				 */
-
-				staticLinkTextArea
-						.append("Building Complete, Searching for Static Links \n");
+				//crawl.run();
+				//crawl.wait();
 				return null;
 
 			}
 
 			protected void done() {
-
+				System.out.println("WE DONE!!!!!!!!!!\n");
+				staticLinkTextArea
+						.append("Building Complete, Searching for Static Links \n");
+		
+				System.out.println(crawl.container.size() + " is the size "
+						+ crawl.urls.size());
 				new Thread(new Runnable() {
 					public void run() {
 						crawl.runListURL();
 					}
 				}).start();
-
-				
-				SwingWorker<Void, Void> worker2 = new SwingWorker<Void, Void>() {
-					@Override
-					protected Void doInBackground() throws Exception {
-						String current = "Starting search \n";
-						while (!crawl.flag().equals("done")) {
-							// For console debug
-							if (!current.equals(crawl.flag())) {
-								/*System.out.println("in the while and flag is "
-										+ crawl.flag() + " and current is "
-										+ current + "\n");*/
-								System.out.println("");
-								current = crawl.flag();
-								staticLinkTextArea.append(crawl.flag() + "\n");
-								System.out.println(crawl.flag());
-							}
-						}
 						
-						
-						//terrible fail safe
-						while (!crawl.flag().equals("done")) {
-							System.out.println("We Stuck");
-						}
-						
-						return null;
-
-					}
-
-					protected void done() {
-						staticLinkTextArea.append("These links have static buttons. \n");
-						
-						for (int i = 0; i < crawl.StaticUrls.size(); i++) {
-							staticLinkTextArea.append((i + 1) + ". "
-									+ crawl.StaticUrls.get(i) + " \n");
-						}
-					}
-
-				};
-
-				worker2.execute();
-
-				// for the update
-				/*
-				 * while(!crawl.flag().equals("done")){
-				 * System.out.println(crawl.flag());
-				 * staticLinkTextArea.append(crawl.flag()); }
-				 */
-
-				/*
-				 * staticLinkTextArea.append("These links have static buttons. \n"
-				 * ); for(int i=0;i<crawl.StaticUrls.size();i++){
-				 * staticLinkTextArea.append((i+1)
-				 * +". "+crawl.StaticUrls.get(i)+" \n");
-				 */
 			}
 
 		};
 
 		worker.execute();
-
+/*		new Thread(new Runnable() {
+			public void run() {
+				while(!worker.isDone()){
+					staticLinkTextArea
+					.append("working\n");
+					System.out.println("working\n");
+				}
+			}
+		}).start();*/
 		
-	//end of run button
+		
+		
+/*		if(worker.isDone()){
+			System.out.println("WE DONE!!!!!!!!!!\n");
+			staticLinkTextArea
+					.append("Building Complete, Searching for Static Links \n");
+	
+			System.out.println(crawl.container.size() + " is the size "
+					+ crawl.urls.size());
+			new Thread(new Runnable() {
+				public void run() {
+					crawl.runListURL();
+				}
+			}).start();
+		
+		}*/
+		// end of run button
 	}
 
 	/**

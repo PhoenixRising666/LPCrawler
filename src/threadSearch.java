@@ -46,7 +46,6 @@ public class threadSearch implements Runnable {
 			while ((inputLine = in.readLine()) != null)
 				a.append(inputLine);
 			in.close();
-
 			return a.toString();
 		} catch (IOException e) {
 			return "";
