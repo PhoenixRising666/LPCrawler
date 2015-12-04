@@ -56,8 +56,7 @@ public class asyncronous implements Runnable {
 														urls.add(e.attr("abs:href"));
 														
 														//System.out.println(e.attr("abs:href"));
-														
-														
+																												
 														//limits depth search
 														if(CurrentDepth<=MaxDepth){
 															//recursive call
@@ -66,12 +65,16 @@ public class asyncronous implements Runnable {
 															A1.run();
 															container.put(e.attr("abs:href"), getUrlSource(e.attr("abs:href")));		
 															urls.add(e.attr("abs:href"));
+															
 															this.wait();
 															System.out.println("Thread Wait Over");
 														}
 														else{
 															container.put(e.attr("abs:href"), getUrlSource(e.attr("abs:href")));		
 															urls.add(e.attr("abs:href"));
+															
+															System.out.println("Thread Close");
+															this.notify();
 														}
 														
 													}
@@ -90,8 +93,8 @@ public class asyncronous implements Runnable {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
-		System.out.println("Thread Close");
-		this.notifyAll();
+		
+		
 	}
 	
 	// pulls source from url
